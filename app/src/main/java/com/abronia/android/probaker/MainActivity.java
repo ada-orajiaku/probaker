@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -18,9 +19,8 @@ import android.widget.Toast;
 
 import com.abronia.android.probaker.adapters.RecipeAdapter;
 import com.abronia.android.probaker.api.ApiInterface;
-import com.abronia.android.probaker.models.Recipe;
-import com.abronia.android.probaker.provider.RecipeColumns;
-import com.abronia.android.probaker.provider.RecipeProvider;
+import com.abronia.android.probaker.data.models.Recipe;
+import com.abronia.android.probaker.data.provider.ProBakerDbContract;
 import com.abronia.android.probaker.utilities.DataUtil;
 import com.abronia.android.probaker.utilities.NetworkUtil;
 
@@ -30,7 +30,6 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnItemClick;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -42,8 +41,8 @@ public class MainActivity extends AppCompatActivity
 
     private final Context context = this;
 
-    @BindView(R.id.recipies_recycler_view)
     RecyclerView recipesRecyclerView;
+    RecyclerView recipesGridRecyclerView;
 
     RecipeAdapter mAdapter;
     ProgressDialog progressDialog;
@@ -54,19 +53,14 @@ public class MainActivity extends AppCompatActivity
     private LoaderManager loaderManager;
 
     static final String[] RECIPE_PROJECTION = {
-            RecipeColumns.ID,
-            RecipeColumns.NAME,
-            RecipeColumns.INGREDIENTS,
-            RecipeColumns.STEPS,
-            RecipeColumns.SERVINGS,
-            RecipeColumns.IMAGE
+            ProBakerDbContract.RecipeEntry._ID,
+            ProBakerDbContract.RecipeEntry.RECIPE_ID,
+            ProBakerDbContract.RecipeEntry.NAME,
+            ProBakerDbContract.RecipeEntry.SERVINGS,
+            ProBakerDbContract.RecipeEntry.IMAGE
     };
 
-//    private OnRecipeSelectedListener listener;
-//    private interface OnRecipeSelectedListener {
-//        void onRecipeSelectedListener(long recipeId);
-//    }
-
+    private boolean mTwoPane;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,8 +68,26 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        recipesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recipesRecyclerView.setHasFixedSize(true);
+        recipesRecyclerView = (RecyclerView) findViewById(R.id.recipes_recycler_view);
+        recipesGridRecyclerView = (RecyclerView) findViewById(R.id.recipes_grid_recycler_view);
+
+        if(recipesGridRecyclerView != null) {
+            // This LinearLayout will only initially exist in the two-pane tablet case
+            mTwoPane = true;
+
+            recipesGridRecyclerView.setLayoutManager(new GridLayoutManager(this,3));
+            recipesGridRecyclerView.setHasFixedSize(true);
+
+
+        } else {
+            // We're in single-pane mode and displaying fragments on a phone in separate activities
+            mTwoPane = false;
+
+            recipesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+            recipesRecyclerView.setHasFixedSize(true);
+        }
+
+
 
         progressDialog = new ProgressDialog(MainActivity.this);
         progressDialog.setCancelable(false);
@@ -102,7 +114,6 @@ public class MainActivity extends AppCompatActivity
                 recipes = response.body();
 
                 saveRecipes(recipes);
-
             }
 
             @Override
@@ -116,7 +127,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(this, RecipeProvider.Recipes.CONTENT_URI, RECIPE_PROJECTION, null, null, null);
+        return new CursorLoader(this, ProBakerDbContract.RecipeEntry.CONTENT_URI, RECIPE_PROJECTION, null, null, null);
     }
 
     @Override
@@ -127,17 +138,22 @@ public class MainActivity extends AppCompatActivity
             fetchRecipes();
         }
         else if (mAdapter == null) {
+
             mAdapter = new RecipeAdapter(this, data);
             mAdapter.setOnItemClickListener(new RecipeAdapter.OnRecipeSelectedListener() {
                 @Override
-                public void onRecipeSelected(long recipeId) {
+                public void onRecipeSelected(int recipeId) {
 
                     Intent intent = new Intent(context, RecipeDetailActivity.class);
                     intent.putExtra(context.getString(R.string.package_name), recipeId);
                     startActivity(intent);
                 }
             });
-            recipesRecyclerView.setAdapter(mAdapter);
+
+            if(mTwoPane)
+                recipesGridRecyclerView.setAdapter(mAdapter);
+            else
+                recipesRecyclerView.setAdapter(mAdapter);
         }
          else {
             mAdapter.swapCursor(data);
@@ -156,17 +172,21 @@ public class MainActivity extends AppCompatActivity
         ContentValues[] recipeValues = new ContentValues[recipes.size()];
         for (int i = 0; i < recipes.size(); i++) {
             ContentValues recipeContentValues = new ContentValues();
-            recipeContentValues.put(RecipeColumns.NAME, recipes.get(i).getName());
-            recipeContentValues.put(RecipeColumns.SERVINGS, recipes.get(i).getServings());
-            recipeContentValues.put(RecipeColumns.IMAGE, recipes.get(i).getImage());
+            recipeContentValues.put(ProBakerDbContract.RecipeEntry.RECIPE_ID, recipes.get(i).getId());
+            recipeContentValues.put(ProBakerDbContract.RecipeEntry.NAME, recipes.get(i).getName());
+            recipeContentValues.put(ProBakerDbContract.RecipeEntry.SERVINGS, recipes.get(i).getServings());
+            recipeContentValues.put(ProBakerDbContract.RecipeEntry.IMAGE, recipes.get(i).getImage());
             recipeValues[i] = recipeContentValues;
 
-            ContentValues[] ingredientContentValues = DataUtil.getIngredientsContentValues(recipes.get(i).getIngredients(), recipes.get(i).getId());
-            RecipeProvider.Ingredients.onBulkInsert(context,RecipeProvider.Ingredients.CONTENT_URI, ingredientContentValues, null);
+            Uri uriResult = getContentResolver().insert(ProBakerDbContract.RecipeEntry.CONTENT_URI, recipeContentValues);
 
-            ContentValues[] stepContentValues = DataUtil.getStepsContentValues(recipes.get(i).getSteps(),recipes.get(i).getId());
-            RecipeProvider.Steps.onBulkInsert(context,RecipeProvider.Steps.CONTENT_URI, stepContentValues, null);
+            if (uriResult != null) {
+                ContentValues[] ingredientContentValues = DataUtil.getIngredientsContentValues(recipes.get(i).getIngredients(), recipes.get(i).getId());
+                ContentValues[] stepContentValues = DataUtil.getStepsContentValues(recipes.get(i).getSteps(),recipes.get(i).getId());
+                getContentResolver().bulkInsert(ProBakerDbContract.IngredientEntry.CONTENT_URI,ingredientContentValues);
+                getContentResolver().bulkInsert(ProBakerDbContract.StepEntry.CONTENT_URI,stepContentValues);
+            }
+
         }
-        RecipeProvider.Recipes.onBulkInsert(context,RecipeProvider.Recipes.CONTENT_URI,recipeValues);
     }
 }

@@ -3,12 +3,10 @@ package com.abronia.android.probaker.utilities;
 import android.content.ContentValues;
 import android.database.Cursor;
 
-import com.abronia.android.probaker.models.Ingredient;
-import com.abronia.android.probaker.models.Recipe;
-import com.abronia.android.probaker.models.Step;
-import com.abronia.android.probaker.provider.IngredientColumns;
-import com.abronia.android.probaker.provider.RecipeColumns;
-import com.abronia.android.probaker.provider.StepColumns;
+import com.abronia.android.probaker.data.models.Ingredient;
+import com.abronia.android.probaker.data.models.Recipe;
+import com.abronia.android.probaker.data.models.Step;
+import com.abronia.android.probaker.data.provider.ProBakerDbContract;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,11 +23,10 @@ public class DataUtil {
 
         while (cursor.moveToNext()) {
 
-            int recipeId = cursor.getInt(cursor.getColumnIndex(RecipeColumns.ID));
-            String name = cursor.getString(cursor.getColumnIndex(RecipeColumns.NAME));
-           // List<Ingredient> ingredients = CursorToIngredientsConverter(cursor. (RecipeColumns.INGREDIENTS))
-            int servings = cursor.getInt(cursor.getColumnIndex(RecipeColumns.SERVINGS));
-            String image = cursor.getString(cursor.getColumnIndex(RecipeColumns.IMAGE));
+            int recipeId = cursor.getInt(cursor.getColumnIndex(ProBakerDbContract.RecipeEntry._ID));
+            String name = cursor.getString(cursor.getColumnIndex(ProBakerDbContract.RecipeEntry.NAME));
+            int servings = cursor.getInt(cursor.getColumnIndex(ProBakerDbContract.RecipeEntry.SERVINGS));
+            String image = cursor.getString(cursor.getColumnIndex(ProBakerDbContract.RecipeEntry.IMAGE));
 
             Recipe recipe = new Recipe(recipeId, name, servings, image);
             recipes.add(recipe);
@@ -37,17 +34,17 @@ public class DataUtil {
         return recipes;
     }
 
-    public List<Step> CursorToStepsConverter(Cursor cursor){
+    public static List<Step> CursorToStepsConverter(Cursor cursor){
 
         List<Step> steps = new ArrayList<Step>();
 
         while (cursor.moveToNext()) {
 
-            int stepId = cursor.getInt(cursor.getColumnIndex(StepColumns.ID));
-            String shortDescription = cursor.getString(cursor.getColumnIndex(StepColumns.SHORT_DESCRIPTION));
-            String description = cursor.getString(cursor.getColumnIndex(StepColumns.DESCRIPTION));
-            String videoURL = cursor.getString(cursor.getColumnIndex(StepColumns.VIDEO_URL));
-            String thumbnailURL = cursor.getString(cursor.getColumnIndex(StepColumns.THUMBNAIL_URL));
+            int stepId = cursor.getInt(cursor.getColumnIndex(ProBakerDbContract.StepEntry._ID));
+            String shortDescription = cursor.getString(cursor.getColumnIndex(ProBakerDbContract.StepEntry.SHORT_DESCRIPTION));
+            String description = cursor.getString(cursor.getColumnIndex(ProBakerDbContract.StepEntry.DESCRIPTION));
+            String videoURL = cursor.getString(cursor.getColumnIndex(ProBakerDbContract.StepEntry.VIDEO_URL));
+            String thumbnailURL = cursor.getString(cursor.getColumnIndex(ProBakerDbContract.StepEntry.THUMBNAIL_URL));
 
             Step step = new Step(stepId, shortDescription, description, videoURL, thumbnailURL);
             steps.add(step);
@@ -55,16 +52,16 @@ public class DataUtil {
         return steps;
     }
 
-    public List<Ingredient> CursorToIngredientsConverter(Cursor cursor){
+    public static List<Ingredient> CursorToIngredientsConverter(Cursor cursor){
 
         List<Ingredient> ingredients = new ArrayList<Ingredient>();
 
         while (cursor.moveToNext()) {
 
-            int ingredientId = cursor.getInt(cursor.getColumnIndex(IngredientColumns.ID));
-            float quantity = cursor.getFloat(cursor.getColumnIndex(IngredientColumns.QUANTITY));
-            String measure = cursor.getString(cursor.getColumnIndex(IngredientColumns.MEASURE));
-            String ingredientString = cursor.getString(cursor.getColumnIndex(IngredientColumns.INGREDIENT));
+            int ingredientId = cursor.getInt(cursor.getColumnIndex(ProBakerDbContract.IngredientEntry._ID));
+            float quantity = cursor.getFloat(cursor.getColumnIndex(ProBakerDbContract.IngredientEntry.QUANTITY));
+            String measure = cursor.getString(cursor.getColumnIndex(ProBakerDbContract.IngredientEntry.MEASURE));
+            String ingredientString = cursor.getString(cursor.getColumnIndex(ProBakerDbContract.IngredientEntry.INGREDIENT));
 
             Ingredient ingredient = new Ingredient(ingredientId, quantity, measure, ingredientString);
             ingredients.add(ingredient);
@@ -79,10 +76,10 @@ public class DataUtil {
 
             ContentValues contentValues = new ContentValues();
 
-            contentValues.put(IngredientColumns.RECIPE_ID, recipeId);
-            contentValues.put(IngredientColumns.QUANTITY, ingredients.get(i).getQuantity());
-            contentValues.put(IngredientColumns.MEASURE, ingredients.get(i).getMeasure());
-            contentValues.put(IngredientColumns.INGREDIENT, ingredients.get(i).getIngredient());
+            contentValues.put(ProBakerDbContract.IngredientEntry.RECIPE_ID, recipeId);
+            contentValues.put(ProBakerDbContract.IngredientEntry.QUANTITY, ingredients.get(i).getQuantity());
+            contentValues.put(ProBakerDbContract.IngredientEntry.MEASURE, ingredients.get(i).getMeasure());
+            contentValues.put(ProBakerDbContract.IngredientEntry.INGREDIENT, ingredients.get(i).getIngredient());
 
             ingredientValues[i] = contentValues;
         }
@@ -96,11 +93,11 @@ public class DataUtil {
 
             ContentValues contentValues = new ContentValues();
 
-            contentValues.put(StepColumns.RECIPE_ID, recipeId);
-            contentValues.put(StepColumns.DESCRIPTION, steps.get(i).getDescription());
-            contentValues.put(StepColumns.SHORT_DESCRIPTION, steps.get(i).getShortDescription());
-            contentValues.put(StepColumns.THUMBNAIL_URL, steps.get(i).getThumbnailURL());
-            contentValues.put(StepColumns.VIDEO_URL, steps.get(i).getVideoURL());
+            contentValues.put(ProBakerDbContract.StepEntry.RECIPE_ID, recipeId);
+            contentValues.put(ProBakerDbContract.StepEntry.DESCRIPTION, steps.get(i).getDescription());
+            contentValues.put(ProBakerDbContract.StepEntry.SHORT_DESCRIPTION, steps.get(i).getShortDescription());
+            contentValues.put(ProBakerDbContract.StepEntry.THUMBNAIL_URL, steps.get(i).getThumbnailURL());
+            contentValues.put(ProBakerDbContract.StepEntry.VIDEO_URL, steps.get(i).getVideoURL());
 
             stepValues[i] = contentValues;
         }

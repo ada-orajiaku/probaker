@@ -1,4 +1,4 @@
-package com.abronia.android.probaker.models;
+package com.abronia.android.probaker.data.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
