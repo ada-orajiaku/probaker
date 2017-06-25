@@ -13,4 +13,5 @@
     <dimen name="small_text_size">10sp</dimen>
     <dimen name="medium_text_size">14sp</dimen>
     <dimen name="large_text_size">20sp</dimen>
+    <dimen name="cardview_height">100dp</dimen>
 </resources>

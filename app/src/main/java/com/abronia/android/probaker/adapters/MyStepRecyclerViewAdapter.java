@@ -1,5 +1,6 @@
 package com.abronia.android.probaker.adapters;
 
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,8 +41,7 @@ public class MyStepRecyclerViewAdapter extends RecyclerView.Adapter<MyStepRecycl
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
-        holder.mIdView.setText(mValues.get(position).getDescription());
-        holder.mContentView.setText(mValues.get(position).getShortDescription());
+        holder.stepShortDescription.setText(mValues.get(position).getDescription());
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,10 +61,10 @@ public class MyStepRecyclerViewAdapter extends RecyclerView.Adapter<MyStepRecycl
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.id)
-        TextView mIdView;
-        @BindView(R.id.content)
-        TextView mContentView;
+        @BindView(R.id.step_short_description)
+        TextView stepShortDescription;
+        @BindView(R.id.step_card_view)
+        CardView stepCardView;
 
         View mView;
         public Step mItem;
@@ -73,14 +73,11 @@ public class MyStepRecyclerViewAdapter extends RecyclerView.Adapter<MyStepRecycl
             super(view);
             mView = view;
             ButterKnife.bind(this,view);
-
-//            mIdView = (TextView) view.findViewById(R.id.id);
-//            mContentView = (TextView) view.findViewById(R.id.content);
         }
 
         @Override
         public String toString() {
-            return super.toString() + " '" + mContentView.getText() + "'";
+            return super.toString() + " '" + stepShortDescription.getText() + "'";
         }
     }
 }

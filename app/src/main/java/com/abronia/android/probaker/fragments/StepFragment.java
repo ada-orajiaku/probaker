@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.abronia.android.probaker.IngredientListActivity;
 import com.abronia.android.probaker.R;
 import com.abronia.android.probaker.RecipeDetailActivity;
 import com.abronia.android.probaker.StepDetailActivity;
@@ -23,6 +24,9 @@ import com.abronia.android.probaker.utilities.DataUtil;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 
 import java.util.List;
+
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 /**
  * A fragment representing a list of Items.
@@ -37,6 +41,8 @@ public class StepFragment extends Fragment {
     private int recipeId;
     private Boolean mTwoPane;
     public OnListFragmentInteractionListener mListener;
+    private static final String FRAGMENT_INGREDIENTS_LIST =
+            "com.abronia.android.probaker.RecipeDetailActivity.INGREDIENTS";
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -68,6 +74,7 @@ public class StepFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_step_list, container, false);
+        ButterKnife.bind(this,view);
 
         Context context = view.getContext();
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.steps_recycler_view);
@@ -83,6 +90,20 @@ public class StepFragment extends Fragment {
         return view;
     }
 
+    @OnClick(R.id.ingredientButton)
+    public void viewIngredients() {
+        if(mTwoPane){
+            Fragment ingredientFragment = IngredientFragment.newInstance(recipeId);
+            getActivity().getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.recipe_detail_container, ingredientFragment, FRAGMENT_INGREDIENTS_LIST)
+                    .commit();
+        }else{
+            Intent intent = new Intent(getActivity(), IngredientListActivity.class);
+            intent.putExtra(IngredientListActivity.ARG_RECIPE_ID,recipeId);
+            startActivity(intent);
+        }
+    }
 
     @Override
     public void onAttach(Context context) {

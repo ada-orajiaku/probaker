@@ -13,7 +13,8 @@ import com.abronia.android.probaker.fragments.IngredientFragment;
 
 import java.util.List;
 
-public class IngredientListActivity extends AppCompatActivity {
+public class IngredientListActivity extends AppCompatActivity
+        implements IngredientFragment.OnListFragmentInteractionListener {
 
     int recipeId;
     static final String  FRAGMENT_INGREDIENT_LIST =
@@ -37,7 +38,7 @@ public class IngredientListActivity extends AppCompatActivity {
         });
 
         Bundle bundle = getIntent().getExtras();
-        recipeId = bundle.getInt(this.getString(R.string.step_package_name));
+        recipeId = bundle.getInt(ARG_RECIPE_ID);
 
         Fragment f = IngredientFragment.newInstance(recipeId);
         getSupportFragmentManager() //
@@ -46,4 +47,8 @@ public class IngredientListActivity extends AppCompatActivity {
                 .commit();
     }
 
+    @Override
+    public void onListFragmentInteraction(Ingredient ingredient) {
+
+    }
 }

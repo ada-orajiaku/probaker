@@ -101,13 +101,12 @@ public class StepDetailsFragment extends Fragment
         description = (TextView) view.findViewById(R.id.step_description);
         shortDescription = (TextView) view.findViewById(R.id.step_short_description);
 
-        mPlayerView.setDefaultArtwork(BitmapFactory.decodeResource
-                (getResources(), R.drawable.default_video_thumbnail));
 
         if (this.getArguments() != null) {
             step = this.getArguments().getParcelable(ARG_STEP);
 
             if(step != null){
+
                 description.setText(step.getDescription());
                 shortDescription.setText(step.getShortDescription());
 
@@ -117,13 +116,20 @@ public class StepDetailsFragment extends Fragment
                 }else{
                     isMediaSet = false;
                 }
+
+                if(step.getThumbnailURL() != null && !step.getThumbnailURL().isEmpty())
+                {
+                    //TODO: use Picasso to set thumbnail url
+                }else{
+                    mPlayerView.setDefaultArtwork(BitmapFactory.decodeResource
+                            (getResources(), R.drawable.default_video_thumbnail));
+                }
             }
         }
 
         return view;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
@@ -139,11 +145,6 @@ public class StepDetailsFragment extends Fragment
             throw new RuntimeException(getActivity().toString()
                     + " must implement OnFragmentInteractionListener");
         }
-    }
-
-    @Override
-    public void onStart(){
-        super.onStart();
     }
 
     @Override

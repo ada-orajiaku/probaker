@@ -21,17 +21,10 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.v4.widget.NestedScrollView
+    <FrameLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/step_list_fragment"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_marginTop="20dp">
-        <fragment
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/step_list_fragment"
-            android:name="com.abronia.android.probaker.fragments.StepFragment"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-    </android.support.v4.widget.NestedScrollView>
+        android:layout_height="wrap_content" />
 
 </LinearLayout>

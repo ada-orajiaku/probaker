@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
@@ -19,20 +20,17 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Ingredient Button"
+            android:text="Ingredients"
             android:textStyle="bold"/>
     </android.support.v7.widget.ButtonBarLayout>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/steps_recycler_view"
-        android:name="com.abronia.android.probaker.fragments.StepFragment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginTop="20dp"
-        app:layoutManager="LinearLayoutManager"
-        tools:context="com.abronia.android.probaker.fragments.StepFragment"
         tools:listitem="@layout/fragment_step" />
 </LinearLayout>
 

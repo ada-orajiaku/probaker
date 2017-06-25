@@ -12,6 +12,9 @@ import com.abronia.android.probaker.fragments.IngredientFragment.OnListFragmentI
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * {@link RecyclerView.Adapter} that can display a {@link Ingredient} and makes a call to the
  * specified {@link OnListFragmentInteractionListener}.
@@ -37,8 +40,9 @@ public class MyIngredientRecyclerViewAdapter extends RecyclerView.Adapter<MyIngr
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
-        holder.mIdView.setText(mValues.get(position).getIngredient());
-        holder.mContentView.setText(mValues.get(position).getMeasure());
+        holder.ingredient.setText(mValues.get(position).getIngredient());
+        holder.quantity.setText(mValues.get(position).getQuantity().toString());
+        holder.measure.setText(mValues.get(position).getMeasure());
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,21 +62,28 @@ public class MyIngredientRecyclerViewAdapter extends RecyclerView.Adapter<MyIngr
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
+
         public final View mView;
-        public final TextView mIdView;
-        public final TextView mContentView;
+
+        @BindView(R.id.ingredient)
+        TextView ingredient;
+        @BindView(R.id.quantity)
+        TextView quantity;
+        @BindView(R.id.measure)
+        TextView measure;
+
         public Ingredient mItem;
+
 
         public ViewHolder(View view) {
             super(view);
+            ButterKnife.bind(this,view);
             mView = view;
-            mIdView = (TextView) view.findViewById(R.id.id);
-            mContentView = (TextView) view.findViewById(R.id.content);
         }
 
         @Override
         public String toString() {
-            return super.toString() + " '" + mContentView.getText() + "'";
+            return super.toString() + " '" + ingredient.getText() + "'";
         }
     }
 }
