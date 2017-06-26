@@ -54,7 +54,7 @@ public class RecipeAdapter extends  RecyclerView.Adapter<RecipeAdapter.RecipeVie
 
     public OnRecipeSelectedListener onItemSelectedListener;
     public interface OnRecipeSelectedListener {
-        void onRecipeSelected(int recipeId);
+        void onRecipeSelected(int recipeId, String recipeName);
     }
 
     public OnRecipeSelectedListener getOnItemClickListener() {
@@ -86,7 +86,7 @@ public class RecipeAdapter extends  RecyclerView.Adapter<RecipeAdapter.RecipeVie
 
         if(mData.getCount() > 0){
 
-            String recipeName = mData.getString(mData.getColumnIndex(ProBakerDbContract.RecipeEntry.NAME));
+            final String recipeName = mData.getString(mData.getColumnIndex(ProBakerDbContract.RecipeEntry.NAME));
             String imageUrl = mData.getString(mData.getColumnIndex(ProBakerDbContract.RecipeEntry.IMAGE));
             final int recipeId = mData.getInt(mData.getColumnIndex(ProBakerDbContract.RecipeEntry.RECIPE_ID));
 
@@ -102,7 +102,7 @@ public class RecipeAdapter extends  RecyclerView.Adapter<RecipeAdapter.RecipeVie
                     String index = ProBakerDbContract.RecipeEntry.RECIPE_ID;
                     //int columnIndex = mData.getColumnIndex(ProBakerDbContract.RecipeEntry.RECIPE_ID);
                    // int recipeId = mData.getInt(mData.getColumnIndex(ProBakerDbContract.RecipeEntry.RECIPE_ID));
-                    onItemSelectedListener.onRecipeSelected(recipeId);
+                    onItemSelectedListener.onRecipeSelected(recipeId,recipeName);
                 }
             };
             holder.recipeCardView.setOnClickListener(listener);

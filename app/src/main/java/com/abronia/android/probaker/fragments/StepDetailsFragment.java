@@ -4,15 +4,22 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.media.session.MediaButtonReceiver;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.NotificationCompat;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -38,6 +45,8 @@ import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
 
@@ -55,6 +64,7 @@ public class StepDetailsFragment extends Fragment
     private static final String TAG = StepDetailsFragment.class.getSimpleName();
 
     public static final String ARG_STEP = "step";
+    public static final String TAG_LOAD_THUMBNAIL = "load_video_thumbnail";
 
     private Step step;
 
@@ -66,6 +76,7 @@ public class StepDetailsFragment extends Fragment
     private TextView description;
 
     private Boolean isMediaSet;
+    private Picasso picasso;
 
     public StepDetailsFragment() {
         // Required empty public constructor
@@ -89,6 +100,7 @@ public class StepDetailsFragment extends Fragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -101,12 +113,16 @@ public class StepDetailsFragment extends Fragment
         description = (TextView) view.findViewById(R.id.step_description);
         shortDescription = (TextView) view.findViewById(R.id.step_short_description);
 
+        Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
+        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         if (this.getArguments() != null) {
             step = this.getArguments().getParcelable(ARG_STEP);
 
             if(step != null){
 
+                ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(step.getShortDescription());
                 description.setText(step.getDescription());
                 shortDescription.setText(step.getShortDescription());
 
@@ -119,7 +135,29 @@ public class StepDetailsFragment extends Fragment
 
                 if(step.getThumbnailURL() != null && !step.getThumbnailURL().isEmpty())
                 {
-                    //TODO: use Picasso to set thumbnail url
+                    picasso = Picasso.with(getActivity());
+                    picasso.with(getActivity())
+                            .load(step.getThumbnailURL())
+                            .tag(TAG_LOAD_THUMBNAIL)
+                            .into(new Target() {
+                                @Override
+                                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                                    mPlayerView.setDefaultArtwork(bitmap);
+                                }
+
+                                @Override
+                                public void onBitmapFailed(Drawable errorDrawable) {
+                                    mPlayerView.setDefaultArtwork(BitmapFactory.decodeResource
+                                            (getResources(), R.drawable.default_video_thumbnail));
+                                }
+
+                                @Override
+                                public void onPrepareLoad(Drawable placeHolderDrawable) {
+                                    mPlayerView.setDefaultArtwork(BitmapFactory.decodeResource
+                                            (getResources(), R.drawable.default_video_thumbnail));
+                                }
+                            });
+
                 }else{
                     mPlayerView.setDefaultArtwork(BitmapFactory.decodeResource
                             (getResources(), R.drawable.default_video_thumbnail));
@@ -128,6 +166,23 @@ public class StepDetailsFragment extends Fragment
         }
 
         return view;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+//        menu.clear();
+//        inflater.inflate(R.menu.me, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case android.R.id.home:
+                getActivity().onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     public void onButtonPressed(Uri uri) {
@@ -151,8 +206,11 @@ public class StepDetailsFragment extends Fragment
     public void onDetach() {
         super.onDetach();
         mListener = null;
-        if(isMediaSet)
+        if (isMediaSet)
             releasePlayer();
+
+        if(picasso != null)
+            picasso.cancelTag(TAG_LOAD_THUMBNAIL);
     }
 
     /**

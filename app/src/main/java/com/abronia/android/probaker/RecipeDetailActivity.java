@@ -22,6 +22,10 @@ public class RecipeDetailActivity extends AppCompatActivity implements StepFragm
 
     private final Context context = this;
     private int recipeId;
+    private String recipeName;
+
+    public static final String ARGS_RECIPE_ID = "recipe_id";
+    public static final String ARGS_RECIPE_NAME = "recipe_name";
 
     private static final String FRAGMENT_STEPS_LIST =
             "com.abronia.android.probaker.RecipeDetailActivity.STEPS";
@@ -44,8 +48,12 @@ public class RecipeDetailActivity extends AppCompatActivity implements StepFragm
 
         //Get the bundle
         Bundle bundle = getIntent().getExtras();
-        if(bundle != null)
-            recipeId = bundle.getInt(context.getString(R.string.package_name));
+        if(bundle != null){
+            recipeId = bundle.getInt(ARGS_RECIPE_ID);
+            recipeName = bundle.getString(ARGS_RECIPE_NAME);
+        }
+
+        this.getSupportActionBar().setTitle(recipeName+" Recipe");
 
         if (savedInstanceState == null) {
 

@@ -78,7 +78,6 @@ public class MainActivity extends AppCompatActivity
             recipesGridRecyclerView.setLayoutManager(new GridLayoutManager(this,3));
             recipesGridRecyclerView.setHasFixedSize(true);
 
-
         } else {
             // We're in single-pane mode and displaying fragments on a phone in separate activities
             mTwoPane = false;
@@ -87,15 +86,12 @@ public class MainActivity extends AppCompatActivity
             recipesRecyclerView.setHasFixedSize(true);
         }
 
-
-
         progressDialog = new ProgressDialog(MainActivity.this);
         progressDialog.setCancelable(false);
         progressDialog.setMessage("Please Wait....");
 
         loaderManager = getSupportLoaderManager();
         loaderManager.initLoader(LOADER_RECIPES,null,this);
-
     }
 
     private void fetchRecipes(){
@@ -142,10 +138,11 @@ public class MainActivity extends AppCompatActivity
             mAdapter = new RecipeAdapter(this, data);
             mAdapter.setOnItemClickListener(new RecipeAdapter.OnRecipeSelectedListener() {
                 @Override
-                public void onRecipeSelected(int recipeId) {
+                public void onRecipeSelected(int recipeId, String recipeName) {
 
                     Intent intent = new Intent(context, RecipeDetailActivity.class);
-                    intent.putExtra(context.getString(R.string.package_name), recipeId);
+                    intent.putExtra(RecipeDetailActivity.ARGS_RECIPE_ID, recipeId);
+                    intent.putExtra(RecipeDetailActivity.ARGS_RECIPE_NAME, recipeName);
                     startActivity(intent);
                 }
             });

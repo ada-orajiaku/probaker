@@ -24,10 +24,6 @@ implements StepDetailsFragment.OnFragmentInteractionListener{
         setContentView(R.layout.activity_step_detail);
         ButterKnife.bind(this);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
         Bundle bundle = getIntent().getExtras();
         step = bundle.getParcelable(this.getString(R.string.step_package_name));
 

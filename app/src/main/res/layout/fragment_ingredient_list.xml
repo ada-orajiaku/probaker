@@ -6,8 +6,9 @@
     android:name="com.abronia.android.probaker.fragments.IngredientFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginLeft="16dp"
-    android:layout_marginRight="16dp"
+    android:layout_marginLeft="@dimen/text_margin"
+    android:layout_marginRight="@dimen/text_margin"
+    android:layout_marginTop="@dimen/hidden_ingredient_margin"
     app:layoutManager="LinearLayoutManager"
     tools:context="com.abronia.android.probaker.fragments.IngredientFragment"
     tools:listitem="@layout/fragment_ingredient" />
