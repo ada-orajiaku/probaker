@@ -24,9 +24,8 @@
     -->
 
     <!-- The static MasterListFragment -->
-    <fragment
+    <FrameLayout
         android:id="@+id/step_list_fragment"
-        android:name="com.abronia.android.probaker.fragments.StepFragment"
         android:layout_width="400dp"
         android:layout_height="match_parent" />
 

@@ -40,7 +40,7 @@ public class IngredientListActivity extends AppCompatActivity
         Bundle bundle = getIntent().getExtras();
         recipeId = bundle.getInt(ARG_RECIPE_ID);
 
-        Fragment f = IngredientFragment.newInstance(recipeId);
+        Fragment f = IngredientFragment.newInstance(recipeId,false);
         getSupportFragmentManager() //
                 .beginTransaction() //
                 .add(R.id.ingredient_list_fragment, f, FRAGMENT_INGREDIENT_LIST) //

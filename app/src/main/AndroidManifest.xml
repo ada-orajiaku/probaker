@@ -38,7 +38,7 @@
             android:name=".StepDetailActivity"
             android:label="@string/title_activity_step_detail"
             android:theme="@style/AppTheme.NoActionBar"
-            android:configChanges="orientation|screenSize"/>
+            android:configChanges="screenSize|orientation|screenLayout|navigation"/>
         <activity
             android:name=".IngredientListActivity"
             android:theme="@style/AppTheme.NoActionBar"/>

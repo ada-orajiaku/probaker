@@ -36,7 +36,9 @@ import java.util.List;
 public class IngredientFragment extends Fragment {
 
     private static final String ARG_RECIPE_ID = "recipeId";
+    public static final String ARG_TWO_PANE = "two_pane";
     private int recipeId;
+    private Boolean mTwoPane;
     private OnListFragmentInteractionListener mListener;
 
     /**
@@ -46,10 +48,11 @@ public class IngredientFragment extends Fragment {
     public IngredientFragment() {
     }
 
-    public static IngredientFragment newInstance(int recipeId) {
+    public static IngredientFragment newInstance(int recipeId, Boolean mTwoPane) {
         IngredientFragment fragment = new IngredientFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_RECIPE_ID, recipeId);
+        args.putBoolean(ARG_TWO_PANE, mTwoPane);
         fragment.setArguments(args);
         return fragment;
     }
@@ -60,8 +63,10 @@ public class IngredientFragment extends Fragment {
 
         if (getArguments() != null) {
             recipeId = getArguments().getInt(ARG_RECIPE_ID);
+            mTwoPane = getArguments().getBoolean(ARG_TWO_PANE);
         }
-        setHasOptionsMenu(true);
+        if(!mTwoPane)
+            setHasOptionsMenu(true);
     }
 
     @Override
@@ -69,10 +74,11 @@ public class IngredientFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_ingredient_list, container, false);
 
-       // Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
-        //((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("INGREDIENTS");
+        if(!mTwoPane){
+            ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("INGREDIENTS");
+        }
+
 
         // Set the adapter
         if (view instanceof RecyclerView) {

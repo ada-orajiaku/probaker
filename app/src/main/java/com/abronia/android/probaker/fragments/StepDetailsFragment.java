@@ -4,6 +4,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
@@ -42,6 +43,7 @@ import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
+import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
@@ -64,6 +66,8 @@ public class StepDetailsFragment extends Fragment
     private static final String TAG = StepDetailsFragment.class.getSimpleName();
 
     public static final String ARG_STEP = "step";
+    public static final String ARG_TWO_PANE = "is_two_pane";
+    private Boolean mTwoPane;
     public static final String TAG_LOAD_THUMBNAIL = "load_video_thumbnail";
 
     private Step step;
@@ -89,10 +93,11 @@ public class StepDetailsFragment extends Fragment
      * @param step Parameter 1.
      * @return A new instance of fragment StepDetailsFragment.
      */
-    public static StepDetailsFragment newInstance(Step step) {
+    public static StepDetailsFragment newInstance(Step step,Boolean mTwoPane) {
         StepDetailsFragment fragment = new StepDetailsFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_STEP, step);
+        args.putBoolean(ARG_TWO_PANE, mTwoPane);
         fragment.setArguments(args);
         return fragment;
     }
@@ -100,7 +105,8 @@ public class StepDetailsFragment extends Fragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
+        if(mTwoPane)
+            setHasOptionsMenu(true);
     }
 
     @Override
@@ -113,12 +119,15 @@ public class StepDetailsFragment extends Fragment
         description = (TextView) view.findViewById(R.id.step_description);
         shortDescription = (TextView) view.findViewById(R.id.step_short_description);
 
-        Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
-        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
         if (this.getArguments() != null) {
             step = this.getArguments().getParcelable(ARG_STEP);
+            mTwoPane = this.getArguments().getBoolean(ARG_TWO_PANE);
+
+            if(!mTwoPane){
+                Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
+                ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+                ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            }
 
             if(step != null){
 
@@ -177,12 +186,22 @@ public class StepDetailsFragment extends Fragment
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+    if(!mTwoPane) {
         switch(item.getItemId()) {
             case android.R.id.home:
                 getActivity().onBackPressed();
                 return true;
         }
+    }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig){
+        super.onConfigurationChanged(newConfig);
+
+        if(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE && mExoPlayer != null)
+            mPlayerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FILL);
     }
 
     public void onButtonPressed(Uri uri) {

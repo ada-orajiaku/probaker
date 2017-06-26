@@ -42,9 +42,10 @@ public class RecipeDetailActivity extends AppCompatActivity implements StepFragm
         setContentView(R.layout.content_recipe_detail);
         ButterKnife.bind(this);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+//        setSupportActionBar(toolbar);
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //this.getSupportActionBar().setTitle(recipeName+" Recipe");
 
         //Get the bundle
         Bundle bundle = getIntent().getExtras();
@@ -53,30 +54,29 @@ public class RecipeDetailActivity extends AppCompatActivity implements StepFragm
             recipeName = bundle.getString(ARGS_RECIPE_NAME);
         }
 
-        this.getSupportActionBar().setTitle(recipeName+" Recipe");
-
         if (savedInstanceState == null) {
 
             Fragment stepFragment = StepFragment.newInstance(recipeId,mTwoPane);
             getSupportFragmentManager() //
-                    .beginTransaction() //
-                    .replace(R.id.step_list_fragment, stepFragment, FRAGMENT_STEPS_LIST) //
+                    .beginTransaction()
+                    .add(R.id.step_list_fragment, stepFragment, FRAGMENT_STEPS_LIST)
                     .commit();
         }
 
         if(findViewById(R.id.step_detail_linear_layout) != null) {
             mTwoPane = true;
 
-            Fragment ingredientFragment = IngredientFragment.newInstance(recipeId);
-            getSupportFragmentManager() //
-                    .beginTransaction() //
-                    .replace(R.id.recipe_detail_container, ingredientFragment, FRAGMENT_INGREDIENTS_LIST) //
+            Fragment ingredientFragment = IngredientFragment.newInstance(recipeId,mTwoPane);
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .add(R.id.recipe_detail_container, ingredientFragment, FRAGMENT_INGREDIENTS_LIST)
                     .commit();
 
         } else {
             // We're in single-pane mode and displaying fragments on a phone in separate activities
             mTwoPane = false;
         }
+
     }
 
     @Override
@@ -84,10 +84,10 @@ public class RecipeDetailActivity extends AppCompatActivity implements StepFragm
 
         if(mTwoPane){
 
-            Fragment f = StepDetailsFragment.newInstance(step);
-            getSupportFragmentManager() //
-                    .beginTransaction() //
-                    .replace(R.id.recipe_detail_container, f, FRAGMENT_STEP_DETAIL) //
+            Fragment f = StepDetailsFragment.newInstance(step,mTwoPane);
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.recipe_detail_container, f, FRAGMENT_STEP_DETAIL)
                     .commit();
 
         }else{

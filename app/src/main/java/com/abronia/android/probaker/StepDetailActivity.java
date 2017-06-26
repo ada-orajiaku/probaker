@@ -27,7 +27,7 @@ implements StepDetailsFragment.OnFragmentInteractionListener{
         Bundle bundle = getIntent().getExtras();
         step = bundle.getParcelable(this.getString(R.string.step_package_name));
 
-        Fragment f = StepDetailsFragment.newInstance(step);
+        Fragment f = StepDetailsFragment.newInstance(step,false);
         getSupportFragmentManager() //
                 .beginTransaction() //
                 .add(R.id.step_details_fragment, f, FRAGMENT_STEP_DETAIL) //

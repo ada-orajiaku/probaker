@@ -93,7 +93,7 @@ public class StepFragment extends Fragment {
     @OnClick(R.id.ingredientButton)
     public void viewIngredients() {
         if(mTwoPane){
-            Fragment ingredientFragment = IngredientFragment.newInstance(recipeId);
+            Fragment ingredientFragment = IngredientFragment.newInstance(recipeId,mTwoPane);
             getActivity().getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.recipe_detail_container, ingredientFragment, FRAGMENT_INGREDIENTS_LIST)
