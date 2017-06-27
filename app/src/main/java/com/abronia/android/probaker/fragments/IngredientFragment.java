@@ -60,6 +60,7 @@ public class IngredientFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRetainInstance(true);
 
         if (getArguments() != null) {
             recipeId = getArguments().getInt(ARG_RECIPE_ID);
@@ -78,7 +79,6 @@ public class IngredientFragment extends Fragment {
             ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("INGREDIENTS");
         }
-
 
         // Set the adapter
         if (view instanceof RecyclerView) {

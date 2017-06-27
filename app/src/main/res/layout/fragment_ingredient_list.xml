@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/list"
     android:name="com.abronia.android.probaker.fragments.IngredientFragment"
-    android:layout_width="match_parent"
+    android:layout_width="fill_parent"
     android:layout_height="match_parent"
     android:layout_marginLeft="@dimen/text_margin"
     android:layout_marginRight="@dimen/text_margin"

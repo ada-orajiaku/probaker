@@ -105,8 +105,7 @@ public class StepDetailsFragment extends Fragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(mTwoPane)
-            setHasOptionsMenu(true);
+        setRetainInstance(true);
     }
 
     @Override
@@ -123,15 +122,18 @@ public class StepDetailsFragment extends Fragment
             step = this.getArguments().getParcelable(ARG_STEP);
             mTwoPane = this.getArguments().getBoolean(ARG_TWO_PANE);
 
+
             if(!mTwoPane){
                 Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
                 ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
                 ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            }else{
+                setHasOptionsMenu(true);
             }
 
             if(step != null){
 
-                ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(step.getShortDescription());
+               // ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(step.getShortDescription());
                 description.setText(step.getDescription());
                 shortDescription.setText(step.getShortDescription());
 
