@@ -37,9 +37,11 @@ import butterknife.OnClick;
 public class StepFragment extends Fragment {
 
     private static final String ARG_RECIPE_ID = "recipeId";
+    private static final String ARG_RECIPE_NAME = "recipeName";
     private static final String ARG_IS_TWO_PANE = "isTwoPane";
     private int recipeId;
     private Boolean mTwoPane;
+    private String recipeName;
     public OnListFragmentInteractionListener mListener;
     private static final String FRAGMENT_INGREDIENTS_LIST =
             "com.abronia.android.probaker.RecipeDetailActivity.INGREDIENTS";
@@ -51,10 +53,11 @@ public class StepFragment extends Fragment {
     public StepFragment() {
     }
 
-    public static StepFragment newInstance(int recipeId, Boolean mTwoPane) {
+    public static StepFragment newInstance(int recipeId,String recipeName, Boolean mTwoPane) {
         StepFragment fragment = new StepFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_RECIPE_ID, recipeId);
+        args.putString(ARG_RECIPE_NAME, recipeName);
         args.putBoolean(ARG_IS_TWO_PANE, mTwoPane);
         fragment.setArguments(args);
         return fragment;
@@ -63,12 +66,20 @@ public class StepFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRetainInstance(true);
+        //setRetainInstance(true);
 
         if (getArguments() != null) {
             recipeId = getArguments().getInt(ARG_RECIPE_ID);
+            recipeName = getArguments().getString(ARG_RECIPE_NAME);
             mTwoPane = getArguments().getBoolean(ARG_IS_TWO_PANE);
         }
+
+        if(savedInstanceState != null){
+            recipeId = savedInstanceState.getInt(ARG_RECIPE_ID);
+            recipeName = savedInstanceState.getString(ARG_RECIPE_NAME);
+            mTwoPane = savedInstanceState.getBoolean(ARG_IS_TWO_PANE);
+        }
+
     }
 
     @Override
@@ -80,7 +91,10 @@ public class StepFragment extends Fragment {
         Context context = view.getContext();
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.steps_recycler_view);
 
-        Uri uri = ProBakerDbContract.StepEntry.CONTENT_URI.buildUpon().appendPath(String.valueOf(recipeId)).build();
+        Uri uri = ProBakerDbContract.StepEntry.CONTENT_URI.buildUpon()
+                .appendPath(ProBakerDbContract.PATH_STEP_BY_RECIPE)
+                .appendPath(String.valueOf(recipeId))
+                .build();
         Cursor cursor = getActivity().getContentResolver().query(uri,null,null,null,null);
 
         List<Step> stepList = DataUtil.CursorToStepsConverter(cursor);
@@ -91,7 +105,7 @@ public class StepFragment extends Fragment {
         return view;
     }
 
-    @OnClick(R.id.ingredientButton)
+    @OnClick(R.id.ingredient_card_view)
     public void viewIngredients() {
         if(mTwoPane){
             Fragment ingredientFragment = IngredientFragment.newInstance(recipeId,mTwoPane);
@@ -116,6 +130,7 @@ public class StepFragment extends Fragment {
                     + " must implement OnListFragmentInteractionListener");
         }
     }
+
 
     @Override
     public void onStart(){

@@ -86,7 +86,10 @@ public class IngredientFragment extends Fragment {
 
             RecyclerView recyclerView = (RecyclerView) view;
 
-            Uri uri = ProBakerDbContract.IngredientEntry.CONTENT_URI.buildUpon().appendPath(String.valueOf(recipeId)).build();
+            Uri uri = ProBakerDbContract.IngredientEntry.CONTENT_URI.buildUpon()
+                    .appendPath(ProBakerDbContract.PATH_INGREDIENT_BY_RECIPE)
+                    .appendPath(String.valueOf(recipeId))
+                    .build();
             Cursor cursor = getActivity().getContentResolver().query(uri,null,null,null,null);
 
             List<Ingredient> ingredients = DataUtil.CursorToIngredientsConverter(cursor);
@@ -100,8 +103,6 @@ public class IngredientFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-//        menu.clear();
-//        inflater.inflate(R.menu.me, menu);
     }
 
     @Override

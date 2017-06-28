@@ -11,7 +11,8 @@
         android:roundIcon="@mipmap/appicon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -28,19 +29,40 @@
         <activity
             android:name=".RecipeDetailActivity"
             android:label="@string/title_activity_recipe_detail"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".MainActivity"
+            android:launchMode="singleTop">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.abronia.android.probaker.MainActivity" />
         </activity>
         <activity
             android:name=".StepDetailActivity"
+            android:configChanges="screenSize|orientation|screenLayout|navigation"
             android:label="@string/title_activity_step_detail"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:configChanges="screenSize|orientation|screenLayout|navigation"/>
+            android:parentActivityName=".RecipeDetailActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.abronia.android.probaker.RecipeDetailActivity" />
+        </activity>
         <activity
             android:name=".IngredientListActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:label="@string/title_activity_ingredient_list"
+            android:parentActivityName=".RecipeDetailActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.abronia.android.probaker.RecipeDetailActivity" />
+        </activity>
+
+        <receiver android:name=".widget.RecipeWidgetProvider">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/recipe_widget_provider_info" />
+        </receiver>
+        <service android:name=".widget.RecipeIntentService" />
     </application>
 
 </manifest>

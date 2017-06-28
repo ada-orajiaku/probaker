@@ -50,6 +50,9 @@ import com.google.android.exoplayer2.util.Util;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 import static android.content.Context.NOTIFICATION_SERVICE;
 
 /**
@@ -74,13 +77,19 @@ public class StepDetailsFragment extends Fragment
 
     private OnFragmentInteractionListener mListener;
 
-    private SimpleExoPlayerView mPlayerView;
     private SimpleExoPlayer mExoPlayer;
-    private TextView shortDescription;
-    private TextView description;
 
     private Boolean isMediaSet;
     private Picasso picasso;
+
+    @BindView(R.id.playerView)
+    SimpleExoPlayerView mPlayerView;
+
+    @BindView(R.id.step_short_description)
+    TextView shortDescription;
+
+    @BindView(R.id.step_description)
+    TextView description;
 
     public StepDetailsFragment() {
         // Required empty public constructor
@@ -113,27 +122,17 @@ public class StepDetailsFragment extends Fragment
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_step_details, container, false);
-
-        mPlayerView = (SimpleExoPlayerView) view.findViewById(R.id.playerView);
-        description = (TextView) view.findViewById(R.id.step_description);
-        shortDescription = (TextView) view.findViewById(R.id.step_short_description);
+        ButterKnife.bind(this,view);
 
         if (this.getArguments() != null) {
+
             step = this.getArguments().getParcelable(ARG_STEP);
             mTwoPane = this.getArguments().getBoolean(ARG_TWO_PANE);
 
-
-            if(!mTwoPane){
-                Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
-                ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
-                ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            }else{
-                setHasOptionsMenu(true);
-            }
-
             if(step != null){
 
-               // ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(step.getShortDescription());
+                getActivity().setTitle(step.getShortDescription());
+
                 description.setText(step.getDescription());
                 shortDescription.setText(step.getShortDescription());
 
@@ -182,8 +181,6 @@ public class StepDetailsFragment extends Fragment
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-//        menu.clear();
-//        inflater.inflate(R.menu.me, menu);
     }
 
     @Override
@@ -234,22 +231,16 @@ public class StepDetailsFragment extends Fragment
             picasso.cancelTag(TAG_LOAD_THUMBNAIL);
     }
 
-    /**
-     * Initialize ExoPlayer.
-     * @param mediaUri The URI of the sample to play.
-     */
+
     private void initializePlayer(Uri mediaUri) {
         if (mExoPlayer == null) {
-            // Create an instance of the ExoPlayer.
             TrackSelector trackSelector = new DefaultTrackSelector();
             LoadControl loadControl = new DefaultLoadControl();
             mExoPlayer = ExoPlayerFactory.newSimpleInstance(getActivity(), trackSelector, loadControl);
             mPlayerView.setPlayer(mExoPlayer);
 
-            // Set the ExoPlayer.EventListener to this activity.
             mExoPlayer.addListener(this);
 
-            // Prepare the MediaSource.
             String userAgent = Util.getUserAgent(getActivity(), "ProBaker");
             MediaSource mediaSource = new ExtractorMediaSource(mediaUri, new DefaultDataSourceFactory(
                     getActivity(), userAgent), new DefaultExtractorsFactory(), null, null);
@@ -258,11 +249,7 @@ public class StepDetailsFragment extends Fragment
         }
     }
 
-    /**
-     * Release ExoPlayer.
-     */
     private void releasePlayer() {
-      //  mNotificationManager.cancelAll();
         mExoPlayer.stop();
         mExoPlayer.release();
         mExoPlayer = null;

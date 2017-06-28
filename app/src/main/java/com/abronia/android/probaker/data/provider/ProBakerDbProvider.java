@@ -20,7 +20,9 @@ public class ProBakerDbProvider extends ContentProvider {
     private static final String TAG = ProBakerDbProvider.class.getSimpleName();
 
     public static final int CODE_RECIPE = 123;
+    public static final int CODE_RANDOM_RECIPE = 124;
     public static final int CODE_RECIPE_BY_ID = 125;
+    public static final int CODE_OTHER_RECIPES = 122;
 
     public static final int CODE_STEP = 126;
     public static final int CODE_STEPS_USING_RECIPE_ID = 127;
@@ -30,6 +32,8 @@ public class ProBakerDbProvider extends ContentProvider {
     public static final int CODE_INGREDIENTS_USING_RECIPE_ID = 130;
     public static final int CODE_INGREDIENT_BY_ID = 131;
 
+    public static final String RANDOM_SORT_ORDER_LIMIT_ONE = "RANDOM() LIMIT 1";
+
     private static final UriMatcher sUriMatcher = builderUriMatcher();
     private ProBakerDbHelper dbHelper;
 
@@ -38,15 +42,16 @@ public class ProBakerDbProvider extends ContentProvider {
         final String authority = ProBakerDbContract.CONTENT_AUTHORITY;
 
         uriMatcher.addURI(authority, ProBakerDbContract.PATH_RECIPE, CODE_RECIPE);
+        uriMatcher.addURI(authority, ProBakerDbContract.PATH_RECIPE+"/"+ProBakerDbContract.PATH_ONE_RANDOM_RECIPE, CODE_RANDOM_RECIPE);
         uriMatcher.addURI(authority, ProBakerDbContract.PATH_RECIPE + "/#", CODE_RECIPE_BY_ID);
 
         uriMatcher.addURI(authority, ProBakerDbContract.PATH_INGREDIENT, CODE_INGREDIENT);
         uriMatcher.addURI(authority, ProBakerDbContract.PATH_INGREDIENT + "/#", CODE_INGREDIENT_BY_ID);
-        uriMatcher.addURI(authority, ProBakerDbContract.PATH_INGREDIENT + "/#", CODE_INGREDIENTS_USING_RECIPE_ID);
+        uriMatcher.addURI(authority, ProBakerDbContract.PATH_INGREDIENT +"/"+ProBakerDbContract.PATH_INGREDIENT_BY_RECIPE+ "/#", CODE_INGREDIENTS_USING_RECIPE_ID);
 
         uriMatcher.addURI(authority, ProBakerDbContract.PATH_STEP, CODE_STEP);
         uriMatcher.addURI(authority, ProBakerDbContract.PATH_STEP + "/#",CODE_STEP_BY_ID);
-        uriMatcher.addURI(authority, ProBakerDbContract.PATH_STEP + "/#",CODE_STEPS_USING_RECIPE_ID);
+        uriMatcher.addURI(authority, ProBakerDbContract.PATH_STEP + "/"+ProBakerDbContract.PATH_STEP_BY_RECIPE+"/#",CODE_STEPS_USING_RECIPE_ID);
 
         return uriMatcher;
     }
@@ -64,6 +69,18 @@ public class ProBakerDbProvider extends ContentProvider {
             case CODE_RECIPE:
                 cursor = dbHelper.getReadableDatabase().query(ProBakerDbContract.RecipeEntry.TABLE_NAME,
                         projection,selection,selectionArgs,null,null,sortOrder);
+                break;
+            case CODE_RANDOM_RECIPE:
+                cursor = dbHelper.getReadableDatabase().query(ProBakerDbContract.RecipeEntry.TABLE_NAME,
+                        projection,selection,selectionArgs,null,null,RANDOM_SORT_ORDER_LIMIT_ONE);
+                break;
+            case CODE_OTHER_RECIPES:
+                String viewedRecipeId = uri.getLastPathSegment();
+                String[] otherRecipesSelectionArguments = new String[]{viewedRecipeId};
+
+                cursor = dbHelper.getReadableDatabase().query(ProBakerDbContract.RecipeEntry.TABLE_NAME,projection,
+                        ProBakerDbContract.RecipeEntry.RECIPE_ID +" != ?",otherRecipesSelectionArguments,null,null,sortOrder);
+
                 break;
             case CODE_INGREDIENTS_USING_RECIPE_ID:
                 String recipeId = uri.getLastPathSegment();

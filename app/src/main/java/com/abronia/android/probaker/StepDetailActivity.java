@@ -4,7 +4,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 
 import com.abronia.android.probaker.data.models.Step;
 import com.abronia.android.probaker.fragments.StepDetailsFragment;
@@ -24,14 +23,28 @@ implements StepDetailsFragment.OnFragmentInteractionListener{
         setContentView(R.layout.activity_step_detail);
         ButterKnife.bind(this);
 
-        Bundle bundle = getIntent().getExtras();
-        step = bundle.getParcelable(this.getString(R.string.step_package_name));
+        if (savedInstanceState != null &&
+                savedInstanceState.getString(this.getString(R.string.step_package_name)) != null) {
+            step = savedInstanceState.getParcelable(this.getString(R.string.step_package_name));
+        }
+        else {
+            Bundle bundle = getIntent().getExtras();
+            step = bundle.getParcelable(this.getString(R.string.step_package_name));
+        }
 
-        Fragment f = StepDetailsFragment.newInstance(step,false);
-        getSupportFragmentManager() //
-                .beginTransaction() //
-                .add(R.id.step_details_fragment, f, FRAGMENT_STEP_DETAIL) //
-                .commit();
+        if (step != null) {
+            Fragment f = StepDetailsFragment.newInstance(step, false);
+            getSupportFragmentManager() //
+                    .beginTransaction() //
+                    .add(R.id.step_details_fragment, f, FRAGMENT_STEP_DETAIL) //
+                    .commit();
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(this.getString(R.string.step_package_name), step);
     }
 
     @Override

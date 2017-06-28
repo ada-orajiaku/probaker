@@ -1,0 +1,42 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent"
+    android:padding="@dimen/widget_margin">
+
+    <ImageView
+        android:id="@+id/appwidget_cake_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:src="@drawable/cupcake" />
+
+    <TextView
+        android:id="@+id/appwidget_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="8dp"
+        android:contentDescription="@string/appwidget_text"
+        android:text="@string/appwidget_text"
+        android:textColor="#4F4F4F"
+        android:textSize="24sp"
+        android:textStyle="bold|italic" />
+
+        <TextView
+            android:id="@+id/appwidget_recipe_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_margin="8dp"
+            android:layout_marginTop="30dp"
+            tools:contentDescription="@string/appwidget_text"
+            tools:text="@string/appwidget_text"
+            android:textColor="#6C6C6C"
+            android:textSize="30sp"
+            android:textStyle="bold|italic" />
+
+
+</RelativeLayout>

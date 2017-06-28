@@ -7,4 +7,6 @@
     <!--<color name="colorAccent">#FF4081</color>-->
     <color name="colorAccent">#73A5BF</color>
     <color name="colorBackground">#A49FA5</color>
+    <color name="colorExoPlayerText">#FFBEBEBE</color>
+    <color name="colorExoPlayerBackground">#CC000000</color>
 </resources>

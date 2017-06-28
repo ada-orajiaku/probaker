@@ -1,6 +1,5 @@
 package com.abronia.android.probaker;
 
-import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -8,7 +7,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 
 import com.abronia.android.probaker.data.models.Ingredient;
 import com.abronia.android.probaker.data.models.Step;
@@ -17,7 +15,6 @@ import com.abronia.android.probaker.fragments.StepDetailsFragment;
 import com.abronia.android.probaker.fragments.StepFragment;
 
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 public class RecipeDetailActivity extends AppCompatActivity implements StepFragment.OnListFragmentInteractionListener,
         IngredientFragment.OnListFragmentInteractionListener, StepDetailsFragment.OnFragmentInteractionListener {
@@ -44,11 +41,17 @@ public class RecipeDetailActivity extends AppCompatActivity implements StepFragm
         setContentView(R.layout.content_recipe_detail);
         ButterKnife.bind(this);
 
-        //Get the bundle
-        Bundle bundle = getIntent().getExtras();
-        if(bundle != null){
-            recipeId = bundle.getInt(ARGS_RECIPE_ID);
-            recipeName = bundle.getString(ARGS_RECIPE_NAME);
+        if(savedInstanceState != null){
+
+            recipeId = savedInstanceState.getInt(ARGS_RECIPE_ID);
+            recipeName = savedInstanceState.getString(ARGS_RECIPE_NAME);
+
+        }else{
+            Bundle bundle = getIntent().getExtras();
+            if(bundle != null){
+                recipeId = bundle.getInt(ARGS_RECIPE_ID);
+                recipeName = bundle.getString(ARGS_RECIPE_NAME);
+            }
         }
 
         setTitle(recipeName+" Recipe");
@@ -56,44 +59,54 @@ public class RecipeDetailActivity extends AppCompatActivity implements StepFragm
         if(findViewById(R.id.recipe_detail_container) != null) {
             mTwoPane = true;
 
-            if(savedInstanceState == null) {
+            FragmentManager fragmentManager = getSupportFragmentManager();
 
-                FragmentManager fragmentManager = getSupportFragmentManager();
+            Fragment stepFragment = StepFragment.newInstance(recipeId,recipeName,mTwoPane);
+            fragmentManager
+                .beginTransaction()
+                .add(R.id.step_list_fragment, stepFragment, FRAGMENT_STEPS_LIST)
+                .commit();
 
-                Fragment stepFragment = StepFragment.newInstance(recipeId,mTwoPane);
-                fragmentManager
-                        .beginTransaction()
-                        .add(R.id.step_list_fragment, stepFragment, FRAGMENT_STEPS_LIST)
-                        .commit();
-
-                Fragment ingredientFragment = IngredientFragment.newInstance(recipeId, mTwoPane);
-                fragmentManager
-                        .beginTransaction()
-                        .add(R.id.recipe_detail_container, ingredientFragment, FRAGMENT_INGREDIENTS_LIST)
-                        .commit();
-            }
+            Fragment ingredientFragment = IngredientFragment.newInstance(recipeId, mTwoPane);
+            fragmentManager
+                .beginTransaction()
+                .add(R.id.recipe_detail_container, ingredientFragment, FRAGMENT_INGREDIENTS_LIST)
+                .commit();
 
         } else {
             // We're in single-pane mode and displaying fragments on a phone in separate activities
             mTwoPane = false;
 
-            if (savedInstanceState == null) {
-                Fragment stepFragment = StepFragment.newInstance(recipeId,mTwoPane);
+                Fragment stepFragment = StepFragment.newInstance(recipeId,recipeName,mTwoPane);
                 getSupportFragmentManager() //
                         .beginTransaction() //
-                        .add(R.id.step_list_fragment, stepFragment, FRAGMENT_STEPS_LIST) //
+                        .replace(R.id.step_list_fragment, stepFragment, FRAGMENT_STEPS_LIST) //
                         .commit();
-            }
+
         }
 
+    }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(ARGS_RECIPE_ID, recipeId);
+        outState.putString(ARGS_RECIPE_NAME, recipeName);
+
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+
+        recipeId = savedInstanceState.getInt(ARGS_RECIPE_ID);
+        recipeName = savedInstanceState.getString(ARGS_RECIPE_NAME);
+        super.onRestoreInstanceState(savedInstanceState);
     }
 
     @Override
     public void onListFragmentInteraction(Step step) {
 
         if(mTwoPane){
-
             Fragment f = StepDetailsFragment.newInstance(step,mTwoPane);
             getSupportFragmentManager() //
                     .beginTransaction() //
@@ -101,7 +114,6 @@ public class RecipeDetailActivity extends AppCompatActivity implements StepFragm
                     .commit();
 
         }else{
-
             Intent intent = new Intent(RecipeDetailActivity.this, StepDetailActivity.class);
             intent.putExtra(context.getString(R.string.step_package_name),step);
             startActivity(intent);
