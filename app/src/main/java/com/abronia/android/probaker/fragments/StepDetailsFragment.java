@@ -224,11 +224,16 @@ public class StepDetailsFragment extends Fragment
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onStop(){
         if (isMediaSet)
             releasePlayer();
 
         if(picasso != null)
             picasso.cancelTag(TAG_LOAD_THUMBNAIL);
+        super.onStop();
     }
 
 
