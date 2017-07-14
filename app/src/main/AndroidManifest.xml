@@ -23,8 +23,9 @@
         <provider
             android:name=".data.provider.ProBakerDbProvider"
             android:authorities="com.abronia.android.probaker"
-            android:exported="false"
-            android:multiprocess="true" />
+            android:exported="true"
+            android:multiprocess="true"
+            android:grantUriPermissions="true"/>
 
         <activity
             android:name=".RecipeDetailActivity"
@@ -63,6 +64,9 @@
                 android:resource="@xml/recipe_widget_provider_info" />
         </receiver>
         <service android:name=".widget.RecipeIntentService" />
+        <service
+            android:name=".widget.IngredientListRemoteViewService"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
     </application>
 
 </manifest>

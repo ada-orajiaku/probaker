@@ -11,7 +11,12 @@ import android.net.Uri;
 import android.support.annotation.Nullable;
 
 import com.abronia.android.probaker.R;
+import com.abronia.android.probaker.data.models.Ingredient;
 import com.abronia.android.probaker.data.provider.ProBakerDbContract;
+import com.abronia.android.probaker.utilities.DataUtil;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by adaobifrank on 6/28/17.
@@ -60,13 +65,14 @@ public class RecipeIntentService extends IntentService {
         if (cursor.moveToNext()) {
             recipeId = cursor.getInt(cursor.getColumnIndex(ProBakerDbContract.RecipeEntry.RECIPE_ID));
             recipeName = cursor.getString(cursor.getColumnIndex(ProBakerDbContract.RecipeEntry.NAME));
+
+            int imageResource = R.drawable.cupcake;
+
+            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
+            int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this, RecipeWidgetProvider.class));
+
+            RecipeWidgetProvider.updateRecipeWidget(this, appWidgetManager, appWidgetIds, imageResource, recipeName,recipeId);
         }
 
-        int imageResource = R.drawable.cupcake;
-
-        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
-        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this, RecipeWidgetProvider.class));
-
-        RecipeWidgetProvider.updateRecipeWidget(this, appWidgetManager, appWidgetIds, imageResource, recipeName,recipeId);
     }
 }

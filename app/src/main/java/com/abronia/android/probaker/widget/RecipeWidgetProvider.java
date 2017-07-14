@@ -11,6 +11,10 @@ import android.widget.RemoteViews;
 import com.abronia.android.probaker.MainActivity;
 import com.abronia.android.probaker.R;
 import com.abronia.android.probaker.RecipeDetailActivity;
+import com.abronia.android.probaker.data.models.Ingredient;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Implementation of App Widget functionality.
@@ -30,6 +34,16 @@ public class RecipeWidgetProvider extends AppWidgetProvider {
         views.setImageViewResource(R.id.appwidget_cake_image, imageResource);
         views.setOnClickPendingIntent(R.id.appwidget_cake_image, pendingIntent);
 
+        Intent remoteAdapterIntent = new Intent(context, IngredientListRemoteViewService.class);
+        remoteAdapterIntent.putExtra(ListViewRemoteViewsFactory.ARG_RECIPE_ID, recipeId);
+        remoteAdapterIntent.putExtra(ListViewRemoteViewsFactory.ARG_RECIPE_NAME, recipeName);
+
+        views.setRemoteAdapter(R.id.appwidget_ingredient_list,remoteAdapterIntent);
+        PendingIntent remoteAdapterPendingIntent = PendingIntent.getActivity(context, 0, remoteAdapterIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        views.setPendingIntentTemplate(R.id.appwidget_ingredient_list, remoteAdapterPendingIntent);
+
+        views.setEmptyView(R.id.appwidget_ingredient_list, R.id.no_ingredients_text);
+
         appWidgetManager.updateAppWidget(appWidgetId, views);
     }
 
@@ -38,7 +52,8 @@ public class RecipeWidgetProvider extends AppWidgetProvider {
         RecipeIntentService.startActionUpdateRecipe(context);
     }
 
-    public static void updateRecipeWidget(Context context, AppWidgetManager appWidgetManager,int[] appWidgetIds, int imageResource, String recipeName, int recipeId) {
+    public static void updateRecipeWidget(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds,
+                                          int imageResource, String recipeName, int recipeId) {
         for (int appWidgetId : appWidgetIds) {
             updateAppWidget(context, appWidgetManager, appWidgetId, imageResource, recipeName, recipeId);
         }
